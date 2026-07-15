@@ -89,7 +89,8 @@ const ru=r.title_ru&&r.title_ru!=r.title?`<div class="ru">${esc(r.title_ru)}</di
 const subs=r.subscribers?` · ${fmt(r.subscribers)} подп.`:"";
 return`<div class="card">
 <a class="th" href="https://www.youtube.com/watch?v=${vid}" target="_blank">
-<img loading="lazy" src="https://i.ytimg.com/vi/${vid}/hqdefault.jpg"></a>
+<img loading="lazy" src="${thumb(vid)}"
+onerror="this.onerror=null;this.src='https://i.ytimg.com/vi/${vid}/hqdefault.jpg'"></a>
 <span class="mult">${fmtM(r.multiplier)}</span>
 <button class="fav ${fav?"on":""}" data-vid="${vid}">${fav?"❤":"🤍"}</button>
 <div class="vr">👁 ${fmt(r.views)} просмотров${d}</div>
@@ -98,6 +99,9 @@ target="_blank">${esc(r.title||"")}</a>${ru}
 <div class="meta"><span class="cn">${esc(r.channel||"")}${subs}</span>
 <span class="score">⭐ ${r.score??""}</span></div></div></div>`}
 const esc=s=>(s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+// i.ytimg.com замедлён/недоступен из РФ без VPN — тянем превью через
+// wsrv.nl (глобальный image-CDN); при его сбое откатываемся на прямой ytimg
+const thumb=v=>"https://wsrv.nl/?url="+encodeURIComponent(`https://i.ytimg.com/vi/${v}/hqdefault.jpg`);
 function render(){
 const tc=DATA.theme_counts,total=Object.values(tc).reduce((a,b)=>a+b,0);
 const tItems=[["",`Все ${total}`]];for(const t in THEME_LABEL)
